@@ -1,0 +1,12 @@
+# 忽略所有 json
+*.json
+
+# 忽略 python 编译文件
+*.pyc
+__pycache__/
+
+# 忽略 numpy 数据
+*.npy
+
+# 忽略 faiss 索引
+*.index

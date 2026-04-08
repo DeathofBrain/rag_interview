@@ -48,7 +48,7 @@ def prepare_faiss_db(
     metadatas = []
     ids = []
 
-    for idx, text in enumerate(rgb_data["texts"]):
+    for idx, text in enumerate(rgb_data["texts"][:5]):
         if isinstance(text, list):
             for i, chunk in enumerate(text):
                 texts.append(chunk)
@@ -62,7 +62,7 @@ def prepare_faiss_db(
     db = FaissDB(
         db_name="rgb_en_collection",
         texts=texts,
-        embed_name="/home/hdd/model/bge-large-en-v1.5",
+        embed_name="text-embedding-v4",
         overwrite=False,
         batch_size=32,
         device="cuda:1",
