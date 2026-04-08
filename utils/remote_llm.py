@@ -4,7 +4,6 @@ from tabnanny import verbose
 import time
 from typing import Any, Dict, List, Optional
 
-from zai import ZhipuAiClient
 
 
 import os

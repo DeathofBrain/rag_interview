@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer
+
 
 from utils.base import print_text
 
@@ -20,29 +20,6 @@ QA_USER = (
 )
 
 
-def build_prompt(model, system_prompt, user_prompt, **kwargs):
-
-    tokenizer = AutoTokenizer.from_pretrained(model)
-
-    messages = []
-
-    if system_prompt is not None:
-        messages.append({"role": "system", "content": system_prompt})
-
-    try:
-        messages.append({"role": "user", "content": user_prompt.format(**kwargs)})
-
-    except KeyError as e:
-        raise ValueError(f"Missing variable {e} in template: {user_prompt}")
-
-    if getattr(tokenizer, "chat_template", None):
-        prompt = tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
-    else:
-        prompt = "\n\n".join([msg["content"] for msg in messages])
-
-    return prompt
 
 
 if __name__ == "__main__":

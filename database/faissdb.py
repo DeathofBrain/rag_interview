@@ -2,7 +2,7 @@ import os
 import faiss
 import numpy as np
 from tqdm import tqdm
-from sentence_transformers import SentenceTransformer
+from utils.embedding import EmbeddingEnv   
 
 
 class FaissDB:
@@ -10,7 +10,7 @@ class FaissDB:
         self,
         db_name,
         texts,
-        embed_name="/home/hdd/model/bge-large-en-v1.5",
+        embed_name="text-embedding-v4",
         overwrite=True,
         batch_size=10,
         device="cuda:1",
@@ -44,8 +44,13 @@ class FaissDB:
         self.meta_path = os.path.join(db_dir, f"{db_name}_{model_short_name}_meta.npy")
 
         print(f"Loading embedding model: {embed_name} on {device}")
-        self.embed_model = SentenceTransformer(embed_name, device=device)
-        self.dim = self.embed_model.get_sentence_embedding_dimension()
+        # 直接使用你改好的 Qwen API EmbeddingEnv
+        self.embed_model = EmbeddingEnv(
+            model_name=embed_name,
+            normalize=True,
+            batch_size=batch_size,
+        )
+        self.dim = self.embed_model.dim
 
         if (
             os.path.exists(self.index_path)
@@ -139,12 +144,8 @@ class FaissDB:
         if is_query:
             query = [self.query_instruction + q for q in query]
 
-        embeddings = self.embed_model.encode(
+        embeddings = self.embed_model._encode(
             query,
-            batch_size=self.batch_size,
-            normalize_embeddings=True,
-            convert_to_numpy=True,
-            show_progress_bar=False,
         )
 
         embeddings = np.asarray(embeddings, dtype=np.float32)
