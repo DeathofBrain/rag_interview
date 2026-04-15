@@ -48,7 +48,7 @@ def prepare_faiss_db(
     metadatas = []
     ids = []
 
-    for idx, text in enumerate(rgb_data["texts"][:5]):
+    for idx, text in enumerate(rgb_data["texts"]):
         if isinstance(text, list):
             for i, chunk in enumerate(text):
                 texts.append(chunk)
@@ -59,6 +59,7 @@ def prepare_faiss_db(
             metadatas.append({"original_id": idx})
             ids.append(f"doc_{idx}")
 
+    print("*****************",len(ids))
     db = FaissDB(
         db_name="rgb_en_collection",
         texts=texts,
@@ -113,6 +114,14 @@ def vectorrag_with_faiss(
 
         return str(answer)
 
+
+
+# 代码的这一部分注释，
+# 对问题进行向量检索
+# 整理检索结果并构建上下文
+# 调用大语言模型基于上下文生成答案
+# 保存每条样本的检索与生成结果，供后续评测使用
+###########################################################################
     for i, (question, answer) in enumerate(
         tqdm(zip(questions, answers), total=len(questions))
     ):
@@ -143,6 +152,11 @@ def vectorrag_with_faiss(
         outside_generate_time = -time.time()
         ret = llm.prompt_complete(question=question, context=context)
         outside_generate_time += time.time()
+############################################################################################
+
+
+
+
 
         response = ret["response"]
         generate_time = ret["generate_time"]
@@ -221,7 +235,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument("--max_tokens", type=int, default=4096)
-    parser.add_argument("--top_k", type=int, default=3)
+    parser.add_argument("--top_k", type=int, default=5)
 
     parser.add_argument(
         "--faiss_persist_dir",
@@ -291,8 +305,8 @@ if __name__ == "__main__":
         f"{args.backend}_top{args.top_k}_{get_date_now()}.json"
     )
 
-    questions = rgb_info["questions"][:4]
-    answers = rgb_info["answers"][:4]
+    questions = rgb_info["questions"][:10]
+    answers = rgb_info["answers"][:10]
 
     final_accuracy = vectorrag_with_faiss(
         questions=questions,
