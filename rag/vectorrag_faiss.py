@@ -48,7 +48,7 @@ def prepare_faiss_db(
     metadatas = []
     ids = []
 
-    for idx, text in enumerate(rgb_data["texts"][:5]):
+    for idx, text in enumerate(rgb_data["texts"]):
         if isinstance(text, list):
             for i, chunk in enumerate(text):
                 texts.append(chunk)
@@ -59,6 +59,7 @@ def prepare_faiss_db(
             metadatas.append({"original_id": idx})
             ids.append(f"doc_{idx}")
 
+    print("*****************",len(ids))
     db = FaissDB(
         db_name="rgb_en_collection",
         texts=texts,
@@ -221,7 +222,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument("--max_tokens", type=int, default=4096)
-    parser.add_argument("--top_k", type=int, default=3)
+    parser.add_argument("--top_k", type=int, default=5)
 
     parser.add_argument(
         "--faiss_persist_dir",
@@ -291,8 +292,8 @@ if __name__ == "__main__":
         f"{args.backend}_top{args.top_k}_{get_date_now()}.json"
     )
 
-    questions = rgb_info["questions"][:4]
-    answers = rgb_info["answers"][:4]
+    questions = rgb_info["questions"][:10]
+    answers = rgb_info["answers"][:10]
 
     final_accuracy = vectorrag_with_faiss(
         questions=questions,
